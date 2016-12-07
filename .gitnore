@@ -1,0 +1,8 @@
+/.idea/
+/tmp/
+/bin/
+*.test
+*.swp
+.idea/
+tmp/
+bin/
