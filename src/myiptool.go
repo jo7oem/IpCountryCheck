@@ -82,8 +82,11 @@ func GetIpCountryList(url string) (iv4list, iv6list *[]ipDataCountry, err error)
 
 }
 */
+func init(){
+	cpus := runtime.NumCPU()
+	runtime.GOMAXPROCS(cpus)
+}
 func main() {
-	runtime.GOMAXPROCS(4)
 	url := "http://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest"
 
 	iv4l, iv6l, err := GetIpCountryList(url)
