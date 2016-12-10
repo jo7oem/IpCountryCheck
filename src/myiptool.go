@@ -11,13 +11,13 @@ import (
 	"strings"
 )
 
-type ipdate struct {
+type ipData struct {
 	IPaddr string
 	Mask   int
 }
 type ipDataCountry struct {
 	Country string
-	ipdate
+	ipData
 }
 
 func GetHttp(url string) (html string, err error) {
@@ -48,7 +48,7 @@ func SplitIpData(instrings string) (IpDataList ipDataCountry, e error) {
 	IpDataList.Country, IpDataList.IPaddr, IpDataList.Mask = buf[1], buf[3], Atoi(buf[4])
 	return IpDataList, e
 }
-func datamakeIp(instrings *[]string, kyeword string, ch chan *[]ipDataCountry) {
+func dataMakeIp(instrings *[]string, kyeword string, ch chan *[]ipDataCountry) {
 	var DataList []ipDataCountry
 	for _, str := range *instrings {
 		if strings.Contains(str, kyeword) {
@@ -71,8 +71,8 @@ func GetIpCountryList(url string) (iv4list, iv6list *[]ipDataCountry, err error)
 
 	iv4ch := make(chan *[]ipDataCountry)
 	iv6ch := make(chan *[]ipDataCountry)
-	go datamakeIp(&gg, "ipv4", iv4ch)
-	go datamakeIp(&gg, "ipv6", iv6ch)
+	go dataMakeIp(&gg, "ipv4", iv4ch)
+	go dataMakeIp(&gg, "ipv6", iv6ch)
 	iv4list = <-iv4ch
 	iv6list = <-iv6ch
 	return iv4list, iv6list, err
@@ -82,7 +82,7 @@ func GetIpCountryList(url string) (iv4list, iv6list *[]ipDataCountry, err error)
 
 }
 */
-func init(){
+func init() {
 	cpus := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpus)
 }
