@@ -13,7 +13,7 @@ func main() {
 	Checkip4addr("4.4.4.4")
 	fmt.Scanf("%s\n",&str)
 	Extendip6addr("::",true,true)
-	fmt.Println(Extendip6addr(str,true,true))
+	fmt.Println(SimplifyIp6(str))
 }
 func Checkip4addr(addr string) bool{
 	if strings.Count(addr,".")==3{
@@ -71,6 +71,22 @@ func Extendip6addr(addr string,result_format,result_ALPHA bool) (string,error){
 	add_s:=fmt.Sprintf(FMT_STR,ibuf[0],ibuf[1],ibuf[2],ibuf[3],ibuf[4],ibuf[5],ibuf[6],ibuf[7])
 	return add_s,nil
 }
-func SimplifyIp6(addr string)string{
+func SimplifyIp6(addr string)(string,error){
+	if false==Checkip6addr(addr){
+		return "",errors.New("noipv6addr")
+	}
+	var ibuf []int64
+	stoi64:=func (s string)(i int64){
+		r,e:=strconv.ParseInt(s,16,64)
+		if e==io.EOF{
+			r=0
+		}
+		return r
+	}
+	for	_,s:=range strings.Split(addr,":"){
+		ibuf=append(ibuf,stoi64(s))
+	}
 	
+	
+	return "",nil
 }
