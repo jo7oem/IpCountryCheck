@@ -1,18 +1,15 @@
 package main
-
 import (
 	"strings"
 	"fmt"
 	"strconv"
-	"io"
 	"errors"
+	"regexp"
 )
-
 func main() {
 	var str string
 	Checkip4addr("4.4.4.4")
 	fmt.Scanf("%s\n",&str)
-	Extendip6addr("::",true,true)
 	fmt.Println(SimplifyIp6(str))
 }
 func Checkip4addr(addr string) bool{
@@ -31,13 +28,23 @@ func Checkip4addr(addr string) bool{
 	return false
 }
 func Checkip6addr(addr string) bool{
-	if 2<=strings.Count(addr,":")&&strings.Count(addr,":")<=7{
+	ipblockn:=strings.Count(addr,":")
+	if 2<=ipblockn&&ipblockn<=7{
+		if ipblockn<7 {
+			if false == strings.Contains(addr, "::") {
+				return false
+			}
+		}
 		sbuf:=strings.Split(addr,":")
 		for _,s:=range sbuf {
-			var add_frag int
-			_,err:=fmt.Sscanf(s,"%x",&add_frag)
-			if err!=nil&&err!=io.EOF{
-				fmt.Printf("%s",err)
+			if 0==strings.Compare(s,""){
+				s="0"
+			}
+			i,err:=strconv.ParseInt(s,16,64)
+			if err!=nil{
+				return false
+			}
+			if 0x0>i||i>0xffff{
 				return false
 			}
 		}
@@ -57,7 +64,7 @@ func Extendip6addr(addr string,result_format,result_ALPHA bool) (string,error){
 	var ibuf [8]int64
 	for n,s:=range (strings.Split(addr,":"))  {
 		i,err:=strconv.ParseInt(s,16,64)
-		if err==io.EOF{
+		if err!=nil{
 			i=0
 		}
 		ibuf[n]=i
@@ -75,18 +82,27 @@ func SimplifyIp6(addr string)(string,error){
 	if false==Checkip6addr(addr){
 		return "",errors.New("noipv6addr")
 	}
-	var ibuf []int64
-	stoi64:=func (s string)(i int64){
-		r,e:=strconv.ParseInt(s,16,64)
-		if e==io.EOF{
-			r=0
+	addr,_=Extendip6addr(addr,false,false)
+	re := regexp.MustCompile("(:|^)(0:)+0")
+	ibuf:=re.FindAllStringIndex(addr,-1)
+	if ibuf!=nil{
+		var ilen int
+		var imax []int
+		for n,i :=range ibuf{
+			if n==0{
+				imax=i
+				ilen=i[1]-i[0]
+				continue
+			}
+			if ilen<(i[1]-i[0]){
+				imax=i
+				ilen=i[1]-i[0]
+			}
 		}
-		return r
+		addr=strings.Replace(addr,addr[imax[0]:imax[1]],":",1)
 	}
-	for	_,s:=range strings.Split(addr,":"){
-		ibuf=append(ibuf,stoi64(s))
+	if strings.Count(addr,":")==1{
+		addr=strings.Replace(addr,":","::",1)
 	}
-	
-	
-	return "",nil
+	return addr,nil
 }
