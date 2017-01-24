@@ -10,7 +10,8 @@ func main() {
 	var str string
 	Checkip4addr("4.4.4.4")
 	fmt.Scanf("%s\n",&str)
-	fmt.Println(SimplifyIp6(str))
+	SimplifyIp6(str)
+	fmt.Println(ModePTS(str))
 }
 func Checkip4addr(addr string) bool{
 	if strings.Count(addr,".")==3{
@@ -105,4 +106,23 @@ func SimplifyIp6(addr string)(string,error){
 		addr=strings.Replace(addr,":","::",1)
 	}
 	return addr,nil
+}
+func ModePTS(addr string)(string,error){
+	var sbuf []string
+	if Checkip4addr(addr){
+		sbl:=strings.Split(addr,".")
+		for i:=3;i>=0;i--{
+			sbuf=append(sbuf,sbl[i])
+		}
+	}else if Checkip6addr(addr){
+		addr,_=Extendip6addr(addr,true,false)
+		addr=strings.Join(strings.Split(addr,":"),"")
+		for i:=31;i>=0;i--{
+			r:=addr[i:i+1]
+			sbuf=append(sbuf,r)
+		}
+	}else{
+	return "",errors.New("noipv6addr")
+	}
+	return strings.Join(sbuf,"."),nil
 }
