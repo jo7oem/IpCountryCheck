@@ -1,4 +1,4 @@
-package main
+package ipaddrtools
 import (
 	"strings"
 	"fmt"
@@ -6,13 +6,6 @@ import (
 	"errors"
 	"regexp"
 )
-func main() {
-	var str string
-	Checkip4addr("4.4.4.4")
-	fmt.Scanf("%s\n",&str)
-	SimplifyIp6(str)
-	fmt.Println(ModePTS(str))
-}
 func Checkip4addr(addr string) bool{
 	if strings.Count(addr,".")==3{
 		sbuf:=strings.Split(addr,".")
