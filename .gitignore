@@ -3,7 +3,7 @@
 /bin/
 *.test
 *.swp
-.idea/
+*.idea/
 tmp/
 bin/
 *.iml
